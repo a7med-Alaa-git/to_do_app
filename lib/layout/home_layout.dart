@@ -21,20 +21,35 @@ class _HomeLayoutState extends State<HomeLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(titles[currentIndex])),
+      appBar: AppBar(
+        title: Text(
+          titles[currentIndex],
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
+      ),
       body: screens[currentIndex],
+      floatingActionButton: FloatingActionButton(
+        shape: CircleBorder(),
+        backgroundColor: Colors.blue,
+        elevation: 0,
+        onPressed: () {},
+        child: Icon(Icons.add, color: Colors.white),
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'New Tasks'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Tasks'),
           BottomNavigationBarItem(
             icon: Icon(Icons.check_circle_outline_outlined),
-            label: 'Done Tasks',
+            label: 'Done',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.archive_outlined),
-            label: 'Archived Tasks',
+            label: 'Archived',
           ),
         ],
+        selectedItemColor: Colors.blue,
         currentIndex: currentIndex,
         onTap: (index) {
           setState(() {
