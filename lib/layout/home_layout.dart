@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:to_do_app/modules/archived_tasks/archived_task_screen.dart';
 import 'package:to_do_app/modules/done_tasks/done_task_screen.dart';
 import 'package:to_do_app/modules/new_tasks/new_task_screen.dart';
@@ -18,6 +19,13 @@ class _HomeLayoutState extends State<HomeLayout> {
     ArchivedTaskScreen(),
   ];
   List<String> titles = ['New Tasks', 'Done Tasks', 'Archived Tasks'];
+
+  @override
+  void initState() {
+    super.initState();
+    createDataBase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,6 +65,19 @@ class _HomeLayoutState extends State<HomeLayout> {
           });
         },
       ),
+    );
+  }
+
+  void createDataBase() async {
+    Database database = await openDatabase(
+      'todo.db',
+      onOpen: (database) {},
+      onCreate: (database, version) {
+        database.execute(
+          'create table tasks (id integer primary key , title text ,date text,time text,status,text)',
+        );
+      },
+      version: 1,
     );
   }
 }
