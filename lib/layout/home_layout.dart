@@ -19,6 +19,7 @@ class _HomeLayoutState extends State<HomeLayout> {
     ArchivedTaskScreen(),
   ];
   List<String> titles = ['New Tasks', 'Done Tasks', 'Archived Tasks'];
+  late Database database;
 
   @override
   void initState() {
@@ -41,7 +42,9 @@ class _HomeLayoutState extends State<HomeLayout> {
         shape: CircleBorder(),
         backgroundColor: Colors.blue,
         elevation: 0,
-        onPressed: () {},
+        onPressed: () {
+          insertToDataBase();
+        },
         child: Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -69,15 +72,30 @@ class _HomeLayoutState extends State<HomeLayout> {
   }
 
   void createDataBase() async {
-    Database database = await openDatabase(
+    database = await openDatabase(
       'todo.db',
       onOpen: (database) {},
-      onCreate: (database, version) {
-        database.execute(
-          'create table tasks (id integer primary key , title text ,date text,time text,status,text)',
+      onCreate: (database, version) async {
+        await database.execute(
+          'create table tasks (id integer primary key , title text , date text , time text ,status text)',
         );
       },
       version: 1,
     );
+  }
+
+  void insertToDataBase() {
+    database
+        .transaction((action) {
+          return action.rawInsert(
+            'insert into tasks (title, date,time,status) values ("new task","24/11/2026","12:26","new")',
+          );
+        })
+        .then((va) {
+          print("$va success");
+        })
+        .catchError((err) {
+          print(err.toString());
+        });
   }
 }
