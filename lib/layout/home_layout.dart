@@ -71,7 +71,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                 .showBottomSheet((context) {
                   return Container(
                     padding: EdgeInsets.all(20),
-                    color: Colors.grey.withOpacity(.05),
+                    color: Colors.grey.withValues(alpha: .05),
                     child: Form(
                       key: formKey,
                       child: Column(
@@ -281,7 +281,9 @@ class _HomeLayoutState extends State<HomeLayout> {
   void createDataBase() async {
     database = await openDatabase(
       'todo.db',
-      onOpen: (database) {},
+      onOpen: (database) {
+        getDataFromDatabase(database);
+      },
       onCreate: (database, version) async {
         await database.execute(
           'create table tasks (id integer primary key , title text , date text , time text ,status text)',
@@ -297,5 +299,9 @@ class _HomeLayoutState extends State<HomeLayout> {
         'insert into tasks (title,date,time,status) values ("${titleController.text}","${dateController.text}","${timeController.text}","new")',
       );
     });
+  }
+
+  Future<List<Map>> getDataFromDatabase(Database database) async {
+    return await database.rawQuery('select * from tasks');
   }
 }
