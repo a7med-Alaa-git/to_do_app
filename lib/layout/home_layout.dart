@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:to_do_app/modules/archived_tasks/archived_task_screen.dart';
 import 'package:to_do_app/modules/done_tasks/done_task_screen.dart';
 import 'package:to_do_app/modules/new_tasks/new_task_screen.dart';
+import 'package:to_do_app/shared/components/constants.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -14,6 +15,7 @@ class HomeLayout extends StatefulWidget {
 
 class _HomeLayoutState extends State<HomeLayout> {
   int currentIndex = 0;
+
   List<Widget> screens = [
     NewTaskScreen(),
     DoneTaskScreen(),
@@ -47,7 +49,9 @@ class _HomeLayoutState extends State<HomeLayout> {
         backgroundColor: Colors.blue,
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: screens[currentIndex],
+      body: tasks.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : screens[currentIndex],
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
         backgroundColor: Colors.blue,
@@ -61,8 +65,11 @@ class _HomeLayoutState extends State<HomeLayout> {
                 dateController.clear();
                 titleController.clear();
                 isBottomSheetShown = false;
-                setState(() {
-                  fabIcon = Icons.edit;
+                getDataFromDatabase(database).then((value) {
+                  setState(() {
+                    tasks = value;
+                    fabIcon = Icons.edit;
+                  });
                 });
               });
             }
@@ -282,7 +289,11 @@ class _HomeLayoutState extends State<HomeLayout> {
     database = await openDatabase(
       'todo.db',
       onOpen: (database) {
-        getDataFromDatabase(database);
+        getDataFromDatabase(database).then((value) {
+          setState(() {
+            tasks = value;
+          });
+        });
       },
       onCreate: (database, version) async {
         await database.execute(
